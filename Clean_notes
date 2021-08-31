@@ -19,3 +19,13 @@ ed_notes$clean_text <- str_replace_all(ed_notes$clean_text, "[^[:alnum:]]", " ")
 ed_notes$clean_text <- tolower(ed_notes$clean_text)
 
 z = ed_notes$clean_text
+
+#Save CSV file for NimbleMiner Analysis
+df <- data.frame("Note" = z)
+write.csv(z, "filepath")  
+#Extract notes with digits
+
+digits <- str_extract_all(z[0:1500000], "\\d{8}")
+str.matches <- gregexpr("[1-9]{8}", digits)
+index_8digits <- which(str.matches %in% 1)
+list_of_all_8digitnumbers <- digits[index_8digits]
