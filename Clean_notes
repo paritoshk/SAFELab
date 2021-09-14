@@ -1,31 +1,24 @@
 library(readr)
-ed_notes <- read_delim("R---DSI/Notes/ED_Notes2016_18.txt","!", escape_double = FALSE, trim_ws = TRUE)
+library(stringr)
+library(lubridate)
+library(dplyr)
+
+
+
+
+ed_notes3 <- read_delim("/Users/pck2123/Downloads/ED_Notes2016_18.txt","~!", escape_double = FALSE, trim_ws = TRUE)
+
 cleanFun <- function(htmlString) {return(gsub("<.*?>", "", htmlString))}
 
 cleanFun2 <- function(htmlString) {return(gsub("&nbsp;|&#183;", " ", htmlString))}
 
 cleanFun3 <- function(htmlString) {return(gsub(".*?>|<span*.", "", htmlString))}
+new_text <- cleanFun(ed_notes3)
+new_text <- cleanFun2(new_text)
+new_text <- cleanFun3(new_text)
 
-ed_notes$clean_text <- cleanFun(ed_notes$`TEXT~`)
-ed_notes$clean_text <- cleanFun2(ed_notes$clean_text)
-ed_notes$clean_text <- cleanFun3(ed_notes$clean_text)
-
-library(stringr)
-
-#take out special characters
-ed_notes$clean_text <- str_replace_all(ed_notes$clean_text, "[^[:alnum:]]", " ")
-
-#convert to lower
-ed_notes$clean_text <- tolower(ed_notes$clean_text)
-
-z = ed_notes$clean_text
-
-#Save CSV file for NimbleMiner Analysis
-df <- data.frame("Note" = z)
-write.csv(z, "filepath")  
-#Extract notes with digits
-
-digits <- str_extract_all(z[0:1500000], "\\d{8}")
-str.matches <- gregexpr("[1-9]{8}", digits)
-index_8digits <- which(str.matches %in% 1)
-list_of_all_8digitnumbers <- digits[index_8digits]
+new_text <- str_replace_all( new_text, "[^[:alnum:]]", " ")
+new_text  <- tolower(new_text )
+df <- data.frame("Note" = new_text,"MRN" = ed_notes3$MRN, "date_primary" = ed_notes3$PRIMARY_TIME)
+df %>% arrange(desc(mdy(df$date_primary)))
+write.csv(df,"C:\\Users\\Use This\\Desktop\\clean2019notes.csv")
